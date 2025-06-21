@@ -3,7 +3,9 @@ const path = require('path');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
-const dbConfig = require('./bin/db');
+const pool = require('./models/db');
+const connection = await pool.getConnection();
+
 
 require('dotenv').config();
 const app = express();
@@ -52,7 +54,6 @@ app.use(session({
       res.status(500).send('Server error');
     }
   });
-
 
 // Routes
 const walkRoutes = require('./routes/walkRoutes');
