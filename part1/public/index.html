@@ -2,70 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog of the Day</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue@3"></script>
   <style>
     body {
-      background-color: yellow;
-      font-family: 'Comic Sans MS';
-      animation: flash 1s infinite;
+      background: #fuchsia;
+      color: yellow;
+      font-family: Comic Sans MS, cursive;
+      animation: spin 5s linear infinite;
     }
-
-    @keyframes flash {
-      0% { background-color: yellow; }
-      50% { background-color: red; }
-      100% { background-color: yellow; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-
-    #app {
-      margin: 50px;
-      display: flex;
-      flex-direction: row-reverse;
-      justify-content: space-around;
-      align-items: flex-start;
-      font-size: 24px;
+    .click-zone {
+      width: 20px;
+      height: 20px;
+      background: black;
+      cursor: crosshair;
     }
-
-    .dog-info {
-      writing-mode: vertical-rl;
-    }
-
-    button {
-      margin-top: 100vh;
-      background-color: transparent;
+    .invisible-button {
+      background: none;
       border: none;
-      font-size: 2em;
-      color: lime;
+      color: transparent;
     }
-
     img {
       width: 300px;
       height: auto;
-      border: 10px dashed pink;
+      filter: blur(3px) brightness(0.5);
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <div class="dog-info">
-      <h1>Dog of the Day!!!</h1>
-      <p>Name: Fido</p>
-      <p>Breed: Unknown</p>
-      <p>Age: ???</p>
-    </div>
-    <div>
-      <img v-if="dogImage" :src="dogImage" alt="Random dog image" />
-      <button @click="fetchDog">???</button>
-    </div>
+    <h1 @click="changeText">Welcome to the Dog of the Day! 🐶🐕🐾</h1>
+    <div class="click-zone" @click="fetchDog"></div>
+    <p>{{ dogName }}</p>
+    <img :src="dogImage" alt="dog" />
+    <button class="invisible-button">Don't click me</button>
   </div>
 
   <script>
-    const { createApp } = Vue;
-
-    createApp({
+    Vue.createApp({
       data() {
         return {
-          dogImage: ''
+          dogImage: '',
+          dogName: 'Doggo McFluffster the Third, Sir Woof-a-lot of Woofingtonshire'
         };
       },
       mounted() {
@@ -74,13 +57,13 @@
       methods: {
         fetchDog() {
           fetch('https://dog.ceo/api/breeds/image/random')
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
               this.dogImage = data.message;
-            })
-            .catch(error => {
-              console.error('Error fetching dog image:', error);
             });
+        },
+        changeText() {
+          alert('SURPRISE! Now do it again.');
         }
       }
     }).mount('#app');
