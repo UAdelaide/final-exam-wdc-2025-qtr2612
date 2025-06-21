@@ -1,9 +1,11 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
+const path = require('path');
 const app = express();
 const PORT = 8080;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 let db;
 
@@ -69,70 +71,4 @@ let db;
         (
           3,
           (SELECT user_id FROM Users WHERE username = 'bobwalker'),
-          (SELECT u.user_id FROM Users u JOIN Dogs d ON d.owner_id = u.user_id JOIN WalkRequests wr ON wr.dog_id = d.dog_id WHERE wr.request_id = 3),
-          4, 'Nice walk'
-        )
-      `);
-
-      console.log('Database seeded successfully.');
-    }
-
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error('Startup error:', err);
-  }
-})();
-
-app.get('/', (req, res) => {
-  res.send("API is working");
-});
-
-app.get('/api/dogs', async (req, res) => {
-  try {
-    const [rows] = await db.execute(`
-      SELECT d.name AS dog_name, d.size, u.username AS owner_username
-      FROM Dogs d
-      JOIN Users u ON d.owner_id = u.user_id
-    `);
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to retrieve dogs.' });
-  }
-});
-
-app.get('/api/walkrequests/open', async (req, res) => {
-  try {
-    const [rows] = await db.execute(`
-      SELECT wr.request_id, d.name AS dog_name, wr.requested_time, wr.duration_minutes,
-             wr.location, u.username AS owner_username
-      FROM WalkRequests wr
-      JOIN Dogs d ON wr.dog_id = d.dog_id
-      JOIN Users u ON d.owner_id = u.user_id
-      WHERE wr.status = 'open'
-    `);
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to retrieve open walk requests.' });
-  }
-});
-
-app.get('/api/walkers/summary', async (req, res) => {
-  try {
-    const [rows] = await db.execute(`
-      SELECT
-        u.username AS walker_username,
-        COUNT(r.rating_id) AS total_ratings,
-        ROUND(AVG(r.rating), 1) AS average_rating,
-        COUNT(r.rating_id) AS completed_walks
-      FROM Users u
-      LEFT JOIN WalkRatings r ON u.user_id = r.walker_id
-      WHERE u.role = 'walker'
-      GROUP BY u.username
-    `);
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to retrieve walker summary.' });
-  }
-});
+          (SELECT u.user_id FROM Users u JOIN Dogs d ON d.owner_id = u.user_id_
