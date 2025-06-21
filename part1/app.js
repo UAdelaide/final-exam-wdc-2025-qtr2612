@@ -31,8 +31,7 @@ let db;
       `);
 
       await db.execute(`
-        INSERT INTO Dogs (owner_id, name, size)
-        VALUES
+        INSERT INTO Dogs (owner_id, name, size) VALUES
         ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Max', 'medium'),
         ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Bella', 'small'),
         ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Rocky', 'large'),
@@ -41,8 +40,7 @@ let db;
       `);
 
       await db.execute(`
-        INSERT INTO WalkRequests (dog_id, requested_time, duration_minutes, location, status)
-        VALUES
+        INSERT INTO WalkRequests (dog_id, requested_time, duration_minutes, location, status) VALUES
         ((SELECT dog_id FROM Dogs WHERE name = 'Max'), '2025-06-10 08:00:00', 30, 'Parklands', 'open'),
         ((SELECT dog_id FROM Dogs WHERE name = 'Bella'), '2025-06-10 09:30:00', 45, 'Beachside Ave', 'accepted'),
         ((SELECT dog_id FROM Dogs WHERE name = 'Rocky'), '2025-06-11 10:00:00', 60, 'Riverbank Trail', 'open'),
@@ -51,8 +49,7 @@ let db;
       `);
 
       await db.execute(`
-        INSERT INTO WalkApplications (request_id, walker_id, status)
-        VALUES
+        INSERT INTO WalkApplications (request_id, walker_id, status) VALUES
         (2, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 'accepted'),
         (3, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 'accepted')
       `);
@@ -62,8 +59,7 @@ let db;
       `);
 
       await db.execute(`
-        INSERT INTO WalkRatings (request_id, walker_id, owner_id, rating, comments)
-        VALUES
+        INSERT INTO WalkRatings (request_id, walker_id, owner_id, rating, comments) VALUES
         (
           2,
           (SELECT user_id FROM Users WHERE username = 'bobwalker'),
@@ -81,11 +77,9 @@ let db;
       console.log('Database seeded successfully.');
     }
 
-    // Start server AFTER connection and seed
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
     });
-
   } catch (err) {
     console.error('Startup error:', err);
   }
@@ -131,10 +125,7 @@ app.get('/api/walkers/summary', async (req, res) => {
         u.username AS walker_username,
         COUNT(r.rating_id) AS total_ratings,
         ROUND(AVG(r.rating), 1) AS average_rating,
-        (
-          SELECT COUNT(*) FROM WalkRatings r2
-          WHERE r2.walker_id = u.user_id
-        ) AS completed_walks
+        COUNT(r.rating_id) AS completed_walks
       FROM Users u
       LEFT JOIN WalkRatings r ON u.user_id = r.walker_id
       WHERE u.role = 'walker'
