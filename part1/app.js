@@ -18,7 +18,6 @@ let db;
 
     const [users] = await db.execute('SELECT COUNT(*) AS count FROM Users');
     if (users[0].count === 0) {
-      // Insert users
       await db.execute(`
         INSERT INTO Users (username, email, password_hash, role) VALUES
         ('alice123', 'alice@example.com', 'hashed123', 'owner'),
@@ -28,7 +27,6 @@ let db;
         ('evewalker', 'eve@example.com', 'hashed999', 'walker')
       `);
 
-      // Insert dogs
       await db.execute(`
         INSERT INTO Dogs (owner_id, name, size)
         VALUES
@@ -39,7 +37,6 @@ let db;
         ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Luna', 'small')
       `);
 
-      // Insert walk requests
       await db.execute(`
         INSERT INTO WalkRequests (dog_id, requested_time, duration_minutes, location, status)
         VALUES
@@ -50,7 +47,6 @@ let db;
         ((SELECT dog_id FROM Dogs WHERE name = 'Luna'), '2025-06-13 12:30:00', 40, 'North Hills', 'cancelled')
       `);
 
-      // Accept walk applications and rate them
       await db.execute(`
         INSERT INTO WalkApplications (request_id, walker_id, status)
         VALUES
@@ -86,7 +82,12 @@ let db;
   }
 })();
 
+app.get('/', (req, res) => {
+  res.send("API is working");
+});
+
 app.get('/api/dogs', async (req, res) => {
+  console.log("GET /api/dogs called");
   try {
     const [rows] = await db.execute(`
       SELECT d.name AS dog_name, d.size, u.username AS owner_username
@@ -95,11 +96,13 @@ app.get('/api/dogs', async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to retrieve dogs.' });
   }
 });
 
 app.get('/api/walkrequests/open', async (req, res) => {
+  console.log("GET /api/walkrequests/open called");
   try {
     const [rows] = await db.execute(`
       SELECT wr.request_id, d.name AS dog_name, wr.requested_time, wr.duration_minutes,
@@ -111,11 +114,13 @@ app.get('/api/walkrequests/open', async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to retrieve open walk requests.' });
   }
 });
 
 app.get('/api/walkers/summary', async (req, res) => {
+  console.log("GET /api/walkers/summary called");
   try {
     const [rows] = await db.execute(`
       SELECT
@@ -133,6 +138,7 @@ app.get('/api/walkers/summary', async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to retrieve walker summary.' });
   }
 });
