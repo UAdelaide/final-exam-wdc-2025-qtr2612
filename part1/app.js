@@ -18,6 +18,7 @@ let db;
 
     const [users] = await db.execute('SELECT COUNT(*) AS count FROM Users');
     if (users[0].count === 0) {
+      // Insert users
       await db.execute(`
         INSERT INTO Users (username, email, password_hash, role) VALUES
         ('alice123', 'alice@example.com', 'hashed123', 'owner'),
@@ -27,6 +28,7 @@ let db;
         ('evewalker', 'eve@example.com', 'hashed999', 'walker')
       `);
 
+      // Insert dogs
       await db.execute(`
         INSERT INTO Dogs (owner_id, name, size)
         VALUES
@@ -37,6 +39,7 @@ let db;
         ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Luna', 'small')
       `);
 
+      // Insert walk requests
       await db.execute(`
         INSERT INTO WalkRequests (dog_id, requested_time, duration_minutes, location, status)
         VALUES
@@ -47,6 +50,22 @@ let db;
         ((SELECT dog_id FROM Dogs WHERE name = 'Luna'), '2025-06-13 12:30:00', 40, 'North Hills', 'cancelled')
       `);
 
+      // Mark walk requests 2 and 3 as completed
+      await db.execute(`
+        UPDATE WalkRequests
+        SET status = 'completed'
+        WHERE request_id IN (2, 3)
+      `);
+
+      // Insert walk applications (accepted)
+      await db.execute(`
+        INSERT INTO WalkApplications (request_id, walker_id, status)
+        VALUES
+        (2, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 'accepted'),
+        (3, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 'accepted')
+      `);
+
+      // Insert walk ratings for completed walks
       await db.execute(`
         INSERT INTO WalkRatings (request_id, walker_id, rating, comments, rated_at)
         VALUES
@@ -61,6 +80,7 @@ let db;
   }
 })();
 
+// /api/dogs
 app.get('/api/dogs', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -74,6 +94,7 @@ app.get('/api/dogs', async (req, res) => {
   }
 });
 
+// /api/walkrequests/open
 app.get('/api/walkrequests/open', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -90,6 +111,7 @@ app.get('/api/walkrequests/open', async (req, res) => {
   }
 });
 
+// /api/walkers/summary
 app.get('/api/walkers/summary', async (req, res) => {
   try {
     const [rows] = await db.execute(`
