@@ -22,24 +22,6 @@ app.use(session({
 app.use(express.static(path.join(__dirname, '/public')));
 seedUsersIfNeeded(pool); // auto-run user seeding if Users table is empty
 
-app.get('/api/users/me', async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Not logged in' });
-  }
-
-  const username = req.session.user.username;
-  try {
-    const [rows] = await pool.execute('SELECT user_id, username, role FROM Users WHERE username = ?', [username]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Database error', details: err });
-  }
-});
-
-
 // added login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
