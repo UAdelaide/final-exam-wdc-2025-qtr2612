@@ -47,9 +47,8 @@
 
     <p>{{ dogName }}</p>
 
-    <img :src="dogImage" class="dog-img" alt="Picture of a dog (not really readable)" />
-
-    <button>Invisible Button</button>
+    <img v-if="dogImage" :src="dogImage" class="dog-img" alt="Decorative dog image with no clear description" />
+    <button type="button">Invisible Button</button>
   </div>
 
   <script>
