@@ -62,12 +62,10 @@ app.use('/api/users', userRoutes);
 // added logout route
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
-      if (err) {
-        return res.status(500).send('Error logging out');
-      }
+      if (err) return res.status(500).send('Logout failed');
       res.clearCookie('connect.sid');
       res.redirect('/');
     });
   });
-
+  
 module.exports = app;
