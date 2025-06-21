@@ -5,10 +5,12 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
 const dbConfig = require('./bin/db');
 
+require('dotenv').config();
 const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Routes
