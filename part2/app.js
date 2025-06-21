@@ -3,9 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
-const pool = require('./models/db');
-const connection = await pool.getConnection();
-
+const dbConfig = require('./bin/db');
 
 require('dotenv').config();
 const app = express();
