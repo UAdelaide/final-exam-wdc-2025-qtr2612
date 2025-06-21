@@ -32,6 +32,35 @@
     }
 
     button {
-        margin-top: 100vh;
-        
+      margin-top: 100vh; /* Forces long scroll (kinematic load) */
+      background-color: transparent;
+      border: none;
+      font-size: 2em;
+      color: lime;
     }
+
+    img {
+      width: 300px;
+      height: auto;
+      border: 10px dashed pink;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="dog-info">
+      <h1>Dog of the Day!!!</h1>
+      <p>Name: Fido</p>
+      <p>Breed: Unknown</p>
+      <p>Age: ???</p>
+    </div>
+    <div>
+      <img :src="dogImage" alt="A cute dog, maybe?" />
+      <button @click="fetchDog">???</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    
