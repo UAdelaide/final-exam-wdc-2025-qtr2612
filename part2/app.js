@@ -20,6 +20,7 @@ app.use(session({
 }));
 
 app.use(express.static(path.join(__dirname, '/public')));
+seedUsersIfNeeded(pool); // auto-run user seeding if Users table is empty
 
 // added login route
 app.post('/login', async (req, res) => {
