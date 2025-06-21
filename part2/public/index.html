@@ -14,14 +14,14 @@
     <p class="lead">Connect with trusted walkers for your beloved dog!</p>
 
     <!-- Login Form -->
-    <form method="POST" action="/login" class="w-50">
+    <form action="/login" method="POST" class="mb-4">
       <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" name="username" id="username" class="form-control" required />
+        <label for="username" class="form-label">Username:</label>
+        <input type="text" class="form-control" id="username" name="username" required />
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" name="password" id="password" class="form-control" required />
+        <label for="password" class="form-label">Password:</label>
+        <input type="password" class="form-control" id="password" name="password" required />
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
