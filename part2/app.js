@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// added session middleware
+// Middleware
 app.use(session({
   secret: 'dogwalksecretkey',
   resave: false,
