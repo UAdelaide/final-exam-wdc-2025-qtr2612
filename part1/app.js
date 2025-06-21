@@ -30,26 +30,13 @@ let db;
 
       // Insert dogs
       await db.execute(`
-        INSERT INTO WalkRatings (request_id, walker_id, owner_id, rating, comments, rated_at)
+        INSERT INTO Dogs (owner_id, name, size)
         VALUES
-        (
-          2,
-          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
-          (SELECT u.user_id FROM Users u
-           JOIN Dogs d ON d.owner_id = u.user_id
-           JOIN WalkRequests wr ON wr.dog_id = d.dog_id
-           WHERE wr.request_id = 2),
-          5, 'Great job', NOW()
-        ),
-        (
-          3,
-          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
-          (SELECT u.user_id FROM Users u
-           JOIN Dogs d ON d.owner_id = u.user_id
-           JOIN WalkRequests wr ON wr.dog_id = d.dog_id
-           WHERE wr.request_id = 3),
-          4, 'Nice walk', NOW()
-        )
+        ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Max', 'medium'),
+        ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Bella', 'small'),
+        ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Rocky', 'large'),
+        ((SELECT user_id FROM Users WHERE username = 'davidowner'), 'Coco', 'medium'),
+        ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Luna', 'small')
       `);
 
       // Insert walk requests
@@ -63,14 +50,7 @@ let db;
         ((SELECT dog_id FROM Dogs WHERE name = 'Luna'), '2025-06-13 12:30:00', 40, 'North Hills', 'cancelled')
       `);
 
-      // Mark walk requests 2 and 3 as completed
-      await db.execute(`
-        UPDATE WalkRequests
-        SET status = 'completed'
-        WHERE request_id IN (2, 3)
-      `);
-
-      // Insert walk applications (accepted)
+      // Accept walk applications and rate them
       await db.execute(`
         INSERT INTO WalkApplications (request_id, walker_id, status)
         VALUES
@@ -78,12 +58,25 @@ let db;
         (3, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 'accepted')
       `);
 
-      // Insert walk ratings for completed walks
       await db.execute(`
-        INSERT INTO WalkRatings (request_id, walker_id, rating, comments, rated_at)
+        UPDATE WalkRequests SET status = 'completed' WHERE request_id IN (2, 3)
+      `);
+
+      await db.execute(`
+        INSERT INTO WalkRatings (request_id, walker_id, owner_id, rating, comments)
         VALUES
-        (2, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 5, 'Great job', NOW()),
-        (3, (SELECT user_id FROM Users WHERE username = 'bobwalker'), 4, 'Nice walk', NOW())
+        (
+          2,
+          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
+          (SELECT u.user_id FROM Users u JOIN Dogs d ON d.owner_id = u.user_id JOIN WalkRequests wr ON wr.dog_id = d.dog_id WHERE wr.request_id = 2),
+          5, 'Great job'
+        ),
+        (
+          3,
+          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
+          (SELECT u.user_id FROM Users u JOIN Dogs d ON d.owner_id = u.user_id JOIN WalkRequests wr ON wr.dog_id = d.dog_id WHERE wr.request_id = 3),
+          4, 'Nice walk'
+        )
       `);
     }
 
@@ -93,7 +86,7 @@ let db;
   }
 })();
 
-// /api/dogs
+// Route: /api/dogs
 app.get('/api/dogs', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -107,7 +100,6 @@ app.get('/api/dogs', async (req, res) => {
   }
 });
 
-// /api/walkrequests/open
 app.get('/api/walkrequests/open', async (req, res) => {
   try {
     const [rows] = await db.execute(`
@@ -124,7 +116,6 @@ app.get('/api/walkrequests/open', async (req, res) => {
   }
 });
 
-// /api/walkers/summary
 app.get('/api/walkers/summary', async (req, res) => {
   try {
     const [rows] = await db.execute(`
