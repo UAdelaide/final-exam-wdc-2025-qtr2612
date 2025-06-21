@@ -30,13 +30,26 @@ let db;
 
       // Insert dogs
       await db.execute(`
-        INSERT INTO Dogs (owner_id, name, size)
+        INSERT INTO WalkRatings (request_id, walker_id, owner_id, rating, comments, rated_at)
         VALUES
-        ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Max', 'medium'),
-        ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Bella', 'small'),
-        ((SELECT user_id FROM Users WHERE username = 'alice123'), 'Rocky', 'large'),
-        ((SELECT user_id FROM Users WHERE username = 'davidowner'), 'Coco', 'medium'),
-        ((SELECT user_id FROM Users WHERE username = 'carol123'), 'Luna', 'small')
+        (
+          2,
+          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
+          (SELECT u.user_id FROM Users u
+           JOIN Dogs d ON d.owner_id = u.user_id
+           JOIN WalkRequests wr ON wr.dog_id = d.dog_id
+           WHERE wr.request_id = 2),
+          5, 'Great job', NOW()
+        ),
+        (
+          3,
+          (SELECT user_id FROM Users WHERE username = 'bobwalker'),
+          (SELECT u.user_id FROM Users u
+           JOIN Dogs d ON d.owner_id = u.user_id
+           JOIN WalkRequests wr ON wr.dog_id = d.dog_id
+           WHERE wr.request_id = 3),
+          4, 'Nice walk', NOW()
+        )
       `);
 
       // Insert walk requests
