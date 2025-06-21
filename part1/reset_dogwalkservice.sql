@@ -1,4 +1,3 @@
-
 DELETE FROM WalkRatings;
 DELETE FROM WalkApplications;
 DELETE FROM WalkRequests;
