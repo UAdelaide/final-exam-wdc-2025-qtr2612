@@ -54,7 +54,6 @@
       <p>Age: ???</p>
     </div>
     <div>
-      <!-- v-if ensures we don’t try to bind to an empty string at first -->
       <img v-if="dogImage" :src="dogImage" alt="Random dog image" />
       <button @click="fetchDog">???</button>
     </div>
